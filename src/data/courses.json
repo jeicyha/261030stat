@@ -211,35 +211,6 @@
           ]
         }
       ]
-    },
-    {
-      "term": "2026-1학기",
-      "courses": [
-        {
-          "code": "STAT4xx",
-          "name": "실험계획법",
-          "description": "[샘플] 요인설계, 블록설계, 반응표면법의 이론과 R 실습.",
-          "syllabusUrl": "https://example.com/syllabus-doe.pdf",
-          "weeks": [
-            {
-              "week": 1,
-              "topic": "실험계획의 기본 원리",
-              "resources": [
-                {
-                  "kind": "slides",
-                  "label": "1주차 슬라이드",
-                  "url": "https://example.com/d-w1.pdf"
-                },
-                {
-                  "kind": "code-r",
-                  "label": "실습 코드 (R)",
-                  "url": "https://github.com/"
-                }
-              ]
-            }
-          ]
-        }
-      ]
     }
   ],
   "announcements": [

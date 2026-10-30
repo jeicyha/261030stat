@@ -58,7 +58,7 @@ function PubItem({ p }: { p: Publication }) {
     setTimeout(() => setCopied(null), 2000);
   };
   return (
-    <li className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+    <li className="rounded-xl border border-slate-200 bg-white shadow-soft p-4 dark:border-slate-700 dark:bg-slate-800">
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="rounded-full bg-navy-100 px-2 py-0.5 font-medium text-navy-800 dark:bg-navy-800 dark:text-navy-100">{TYPE_LABEL[p.type]}</span>
         {p.keywords?.map((k) => <span key={k} className="text-slate-500 dark:text-slate-400">#{k}</span>)}
@@ -161,7 +161,7 @@ export default function Publications() {
 
       {years.map((y) => (
         <section key={y} className="mb-8" aria-labelledby={`y-${y}`}>
-          <h2 id={`y-${y}`} className="mb-3 text-xl font-bold text-navy-800 dark:text-navy-100">{y}</h2>
+          <h2 id={`y-${y}`} className="section-title mb-3">{y}</h2>
           <ul className="space-y-3">
             {items.filter((i) => i.year === y).map((p) => <PubItem key={p.id} p={p} />)}
           </ul>

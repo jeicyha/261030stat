@@ -30,7 +30,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
         <button
           ref={btn}
           onClick={onClose}
-          className="mt-5 w-full rounded-lg bg-navy-700 px-4 py-2 font-medium text-white hover:bg-navy-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-400"
+          className="mt-5 w-full rounded-lg bg-gradient-to-r from-navy-700 to-accent-700 px-4 py-2 font-medium text-white hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-400"
         >
           확인
         </button>

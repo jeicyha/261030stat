@@ -21,38 +21,39 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      <section className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-        <img src={p.photo} alt={p.photoAlt} width={176} height={176} className="h-44 w-44 shrink-0 rounded-full border-4 border-white object-cover shadow dark:border-slate-700" />
-        <div className="text-center sm:text-left">
-          <h1 className="text-3xl font-bold text-navy-900 dark:text-white">
-            {p.name} <span className="text-xl font-normal text-slate-500 dark:text-slate-400">{p.title}</span>
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-navy-800 via-navy-700 to-accent-700 p-6 text-white shadow-soft sm:p-10 flex flex-col items-center gap-6 sm:flex-row sm:items-center">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+        <img src={p.photo} alt={p.photoAlt} width={176} height={176} className="relative h-40 w-40 shrink-0 rounded-full border-4 border-white/80 object-cover shadow-xl sm:h-44 sm:w-44" />
+        <div className="relative text-center sm:text-left">
+          <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            {p.name} <span className="text-xl font-normal text-navy-100">{p.title}</span>
           </h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-300">{p.affiliation}</p>
-          <p className="mt-4 text-lg text-navy-800 dark:text-navy-100">{p.tagline}</p>
+          <p className="mt-1 text-navy-100">{p.affiliation}</p>
+          <p className="mt-4 text-lg leading-relaxed text-white/95">{p.tagline}</p>
           <ul className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start" aria-label="연구 관심사">
             {p.keywords.map((k) => (
-              <li key={k} className="rounded-full bg-navy-100 px-3 py-1 text-sm text-navy-800 dark:bg-navy-800 dark:text-navy-100">{k}</li>
+              <li key={k} className="rounded-full bg-white/15 px-3 py-1 text-sm text-white ring-1 ring-white/30 backdrop-blur">{k}</li>
             ))}
           </ul>
           <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm sm:justify-start">
-            <a className="font-medium text-navy-700 underline dark:text-navy-300" href={`mailto:${p.email}`}>{p.email}</a>
+            <a className="font-medium text-white underline underline-offset-2" href={`mailto:${p.email}`}>{p.email}</a>
             {ext.map(([label, url]) => (
-              <a key={label} className="text-navy-700 underline dark:text-navy-300" href={url} target="_blank" rel="noopener noreferrer">{label}</a>
+              <a key={label} className="text-white underline underline-offset-2" href={url} target="_blank" rel="noopener noreferrer">{label}</a>
             ))}
           </div>
         </div>
       </section>
 
       <section aria-labelledby="bio-h">
-        <h2 id="bio-h" className="mb-3 text-xl font-bold text-navy-800 dark:text-navy-100">소개</h2>
+        <h2 id="bio-h" className="section-title mb-3">소개</h2>
         <Markdown>{p.bio}</Markdown>
       </section>
 
       <section aria-labelledby="news-h">
-        <h2 id="news-h" className="mb-3 text-xl font-bold text-navy-800 dark:text-navy-100">최근 소식</h2>
+        <h2 id="news-h" className="section-title mb-3">최근 소식</h2>
         {updates.error && <ErrorBox message={updates.error} />}
         {updates.loading && <Loading />}
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white dark:divide-slate-700 dark:border-slate-700 dark:bg-slate-800">
+        <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white shadow-soft dark:divide-slate-700 dark:border-slate-700 dark:bg-slate-800">
           {updates.data?.items.map((u) => (
             <li key={u.id} className="flex flex-col gap-1 p-4 sm:flex-row sm:gap-4">
               <time dateTime={u.date} className="shrink-0 text-sm text-slate-500 dark:text-slate-400 sm:w-28">{u.date}</time>

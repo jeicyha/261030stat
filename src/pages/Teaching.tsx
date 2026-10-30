@@ -28,10 +28,10 @@ export default function Teaching() {
       <PageHeader title="수업" subtitle="학기별 과목과 주차별 자료" />
 
       <section aria-labelledby="ann-h" className="mb-12">
-        <h2 id="ann-h" className="mb-3 text-xl font-bold text-navy-800 dark:text-navy-100">공지사항</h2>
+        <h2 id="ann-h" className="section-title mb-3">공지사항</h2>
         <ul className="space-y-3">
           {data.announcements.map((a) => (
-            <li key={a.id} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+            <li key={a.id} className="rounded-xl border border-slate-200 bg-white shadow-soft p-4 dark:border-slate-700 dark:bg-slate-800">
               <div className="flex flex-wrap items-baseline gap-x-3 text-sm text-slate-500 dark:text-slate-400">
                 <time dateTime={a.date}>{a.date}</time>
                 {a.course && <span>{a.course}</span>}
@@ -48,7 +48,7 @@ export default function Teaching() {
           <h2 id={`t-${s.term}`} className="mb-4 text-2xl font-bold text-navy-900 dark:text-navy-100">{s.term}</h2>
           <div className="space-y-6">
             {s.courses.map((c) => (
-              <article key={c.code + c.name} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+              <article key={c.code + c.name} className="rounded-2xl border border-slate-200 bg-white shadow-soft p-5 dark:border-slate-700 dark:bg-slate-800">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">{c.code}</p>

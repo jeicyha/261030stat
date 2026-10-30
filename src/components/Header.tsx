@@ -29,7 +29,7 @@ export default function Header() {
   const items = isProfessor ? [...NAV, { to: "/admin", label: "관리" }] : NAV;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="text-base font-bold text-navy-800 dark:text-navy-100 sm:text-lg">
           하정철 <span className="font-normal text-slate-500 dark:text-slate-400">통계학 연구실</span>
@@ -66,7 +66,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setShowLogin(true)}
-              className="rounded-md bg-navy-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-navy-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-400"
+              className="rounded-md bg-gradient-to-r from-navy-700 to-accent-700 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-400"
             >
               로그인
             </button>

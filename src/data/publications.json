@@ -60,38 +60,6 @@
       "doi": "10.1000/sample.2025.002"
     },
     {
-      "id": "2025-rsm-preprint",
-      "type": "preprint",
-      "title": "[샘플] 순차적 반응표면 설계의 효율성 비교",
-      "authors": [
-        "하정철",
-        "최유진"
-      ],
-      "venue": "arXiv (샘플)",
-      "year": 2025,
-      "keywords": [
-        "실험계획",
-        "반응표면"
-      ],
-      "pdfUrl": "https://arxiv.org/",
-      "githubUrl": "https://github.com/"
-    },
-    {
-      "id": "2024-factorial",
-      "type": "paper",
-      "title": "[샘플] 부분요인설계에서 교락 구조의 선택",
-      "authors": [
-        "하정철"
-      ],
-      "venue": "응용통계연구 37(4), 411-430",
-      "year": 2024,
-      "keywords": [
-        "실험계획",
-        "부분요인설계"
-      ],
-      "doi": "10.1000/sample.2024.003"
-    },
-    {
       "id": "2024-slides-ts",
       "type": "slides",
       "title": "[샘플] 시계열 예측 입문: 직관에서 모형까지 (초청 강연)",
@@ -139,22 +107,6 @@
       "doi": "10.1000/sample.2023.004"
     },
     {
-      "id": "2022-doe",
-      "type": "paper",
-      "title": "[샘플] 최적 설계 기준의 비교 연구",
-      "authors": [
-        "하정철",
-        "김민준"
-      ],
-      "venue": "한국품질경영학회지 50(1), 1-20",
-      "year": 2022,
-      "keywords": [
-        "최적설계",
-        "실험계획"
-      ],
-      "doi": "10.1000/sample.2022.005"
-    },
-    {
       "id": "2021-garch",
       "type": "paper",
       "title": "[샘플] GARCH 모형의 변동성 예측 성능 평가",
@@ -182,20 +134,6 @@
         "관리도",
         "EWMA"
       ]
-    },
-    {
-      "id": "2019-slides-doe",
-      "type": "slides",
-      "title": "[샘플] 실험계획법 사례 발표",
-      "authors": [
-        "하정철"
-      ],
-      "venue": "계명대학교 통계학과 세미나 (샘플)",
-      "year": 2019,
-      "keywords": [
-        "실험계획"
-      ],
-      "pdfUrl": "https://example.com/doe.pdf"
     },
     {
       "id": "2018-spectral",

@@ -20,7 +20,7 @@ export default function Contact() {
   return (
     <>
       <PageHeader title="연락처" subtitle={`${data.name} · ${data.affiliation}`} />
-      <dl className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-700 dark:border-slate-700 dark:bg-slate-800">
+      <dl className="divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white shadow-soft dark:divide-slate-700 dark:border-slate-700 dark:bg-slate-800">
         {rows.map(([k, v]) => (
           <div key={k} className="p-4 sm:flex sm:gap-6">
             <dt className="font-semibold text-navy-800 dark:text-navy-100 sm:w-40">{k}</dt>
