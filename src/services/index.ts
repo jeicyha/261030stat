@@ -1,9 +1,9 @@
 // 서비스를 한곳에서 고르는 파일입니다.
-// Firebase 연동 때 아래 두 줄만 firebase 버전으로 바꾸면 됩니다.
-//   import { createFirebaseAuthService } from "./firebaseAuthService";
-//   export const authService = createFirebaseAuthService();
+// .env에 Firebase 설정이 있으면 실제 구글 로그인, 없으면 가짜(mock) 로그인을 씁니다.
 import { createMockAuthService } from "./mockAuthService";
+import { createFirebaseAuthService, hasFirebaseConfig } from "./firebaseAuthService";
 import { createJsonDataService } from "./jsonDataService";
 
-export const authService = createMockAuthService();
+export const authService = hasFirebaseConfig ? createFirebaseAuthService() : createMockAuthService();
+// 자료는 아직 JSON입니다. Firestore 연동 시 firestoreDataService로 교체합니다.
 export const dataService = createJsonDataService();
