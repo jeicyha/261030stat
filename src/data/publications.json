@@ -1,0 +1,217 @@
+{
+  "_안내": "논문·자료 목록입니다. 아래 '[샘플]' 항목은 예시이므로 실제 업적으로 교체하세요. 새 항목은 _example을 복사해 items 목록에 추가합니다. type: paper(논문) / preprint(프리프린트) / slides(발표자료) / code(코드·데이터). doi는 주소 전체가 아니라 '10.xxxx/...' 부분만 씁니다. bibtex를 비워 두면 자동으로 만들어 줍니다.",
+  "_example": {
+    "id": "2026-my-paper",
+    "type": "paper",
+    "title": "논문 제목",
+    "authors": [
+      "하정철",
+      "공저자"
+    ],
+    "venue": "학술지 이름 12(3), 45-67",
+    "year": 2026,
+    "keywords": [
+      "시계열",
+      "예측"
+    ],
+    "abstract": "초록(선택)",
+    "doi": "10.xxxx/xxxxx",
+    "pdfUrl": "https://...",
+    "githubUrl": "https://github.com/...",
+    "bibtex": "@article{key,\n  title={...}\n}"
+  },
+  "items": [
+    {
+      "id": "2025-ssm-forecast",
+      "type": "paper",
+      "title": "[샘플] 고차원 시계열을 위한 상태공간 예측 방법",
+      "authors": [
+        "하정철",
+        "김민준"
+      ],
+      "venue": "한국통계학회논문집 32(2), 101-124",
+      "year": 2025,
+      "keywords": [
+        "상태공간모형",
+        "예측",
+        "시계열"
+      ],
+      "abstract": "요인구조를 가진 고차원 시계열에 대해 칼만필터 기반의 효율적 예측 방법을 제안하고 모의실험으로 성능을 비교한다.",
+      "doi": "10.1000/sample.2025.001",
+      "pdfUrl": "https://example.com/sample.pdf",
+      "githubUrl": "https://github.com/"
+    },
+    {
+      "id": "2025-arima-bootstrap",
+      "type": "paper",
+      "title": "[샘플] ARIMA 예측구간의 붓스트랩 보정",
+      "authors": [
+        "하정철",
+        "이서연",
+        "박지후"
+      ],
+      "venue": "Journal of Time Series Analysis (샘플) 46(1), 33-58",
+      "year": 2025,
+      "keywords": [
+        "ARIMA",
+        "붓스트랩",
+        "예측구간"
+      ],
+      "doi": "10.1000/sample.2025.002"
+    },
+    {
+      "id": "2025-rsm-preprint",
+      "type": "preprint",
+      "title": "[샘플] 순차적 반응표면 설계의 효율성 비교",
+      "authors": [
+        "하정철",
+        "최유진"
+      ],
+      "venue": "arXiv (샘플)",
+      "year": 2025,
+      "keywords": [
+        "실험계획",
+        "반응표면"
+      ],
+      "pdfUrl": "https://arxiv.org/",
+      "githubUrl": "https://github.com/"
+    },
+    {
+      "id": "2024-factorial",
+      "type": "paper",
+      "title": "[샘플] 부분요인설계에서 교락 구조의 선택",
+      "authors": [
+        "하정철"
+      ],
+      "venue": "응용통계연구 37(4), 411-430",
+      "year": 2024,
+      "keywords": [
+        "실험계획",
+        "부분요인설계"
+      ],
+      "doi": "10.1000/sample.2024.003"
+    },
+    {
+      "id": "2024-slides-ts",
+      "type": "slides",
+      "title": "[샘플] 시계열 예측 입문: 직관에서 모형까지 (초청 강연)",
+      "authors": [
+        "하정철"
+      ],
+      "venue": "한국통계학회 춘계학술대회 (샘플)",
+      "year": 2024,
+      "keywords": [
+        "시계열",
+        "강연"
+      ],
+      "pdfUrl": "https://example.com/slides.pdf"
+    },
+    {
+      "id": "2023-code-ts",
+      "type": "code",
+      "title": "[샘플] tsLabKR: 시계열 실습용 R 패키지·데이터",
+      "authors": [
+        "하정철"
+      ],
+      "venue": "GitHub 저장소 (샘플)",
+      "year": 2023,
+      "keywords": [
+        "R",
+        "코드",
+        "데이터"
+      ],
+      "githubUrl": "https://github.com/"
+    },
+    {
+      "id": "2023-seasonal",
+      "type": "paper",
+      "title": "[샘플] 계절형 시계열의 구조변화 탐지",
+      "authors": [
+        "하정철",
+        "정하은"
+      ],
+      "venue": "Computational Statistics & Data Analysis (샘플) 180",
+      "year": 2023,
+      "keywords": [
+        "구조변화",
+        "계절성"
+      ],
+      "doi": "10.1000/sample.2023.004"
+    },
+    {
+      "id": "2022-doe",
+      "type": "paper",
+      "title": "[샘플] 최적 설계 기준의 비교 연구",
+      "authors": [
+        "하정철",
+        "김민준"
+      ],
+      "venue": "한국품질경영학회지 50(1), 1-20",
+      "year": 2022,
+      "keywords": [
+        "최적설계",
+        "실험계획"
+      ],
+      "doi": "10.1000/sample.2022.005"
+    },
+    {
+      "id": "2021-garch",
+      "type": "paper",
+      "title": "[샘플] GARCH 모형의 변동성 예측 성능 평가",
+      "authors": [
+        "하정철"
+      ],
+      "venue": "응용통계연구 34(3), 301-320",
+      "year": 2021,
+      "keywords": [
+        "GARCH",
+        "변동성"
+      ]
+    },
+    {
+      "id": "2020-ewma",
+      "type": "preprint",
+      "title": "[샘플] EWMA 관리도의 다변량 확장",
+      "authors": [
+        "하정철",
+        "한지민"
+      ],
+      "venue": "SSRN (샘플)",
+      "year": 2020,
+      "keywords": [
+        "관리도",
+        "EWMA"
+      ]
+    },
+    {
+      "id": "2019-slides-doe",
+      "type": "slides",
+      "title": "[샘플] 실험계획법 사례 발표",
+      "authors": [
+        "하정철"
+      ],
+      "venue": "계명대학교 통계학과 세미나 (샘플)",
+      "year": 2019,
+      "keywords": [
+        "실험계획"
+      ],
+      "pdfUrl": "https://example.com/doe.pdf"
+    },
+    {
+      "id": "2018-spectral",
+      "type": "paper",
+      "title": "[샘플] 스펙트럴 밀도 추정의 편향 보정",
+      "authors": [
+        "하정철",
+        "오세훈"
+      ],
+      "venue": "Statistics & Probability Letters (샘플) 140",
+      "year": 2018,
+      "keywords": [
+        "스펙트럴",
+        "시계열"
+      ],
+      "doi": "10.1000/sample.2018.006"
+    }
+  ]
+}

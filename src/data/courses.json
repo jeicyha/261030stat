@@ -1,0 +1,267 @@
+{
+  "_안내": "수업 정보입니다. 학기(semesters) 아래에 과목(courses), 과목 아래에 주차(weeks)와 자료(resources)가 들어갑니다. 자료의 kind: slides(슬라이드) / code-r / code-python / code-sas / data(데이터셋) / assignment(과제) / other. 파일은 올리지 않고 GitHub·구글 드라이브 등의 링크(url)만 적습니다.",
+  "_example": {
+    "semesters": {
+      "term": "2027-1학기",
+      "courses": [
+        {
+          "code": "STAT000",
+          "name": "과목명",
+          "description": "한 줄 설명",
+          "syllabusUrl": "https://...",
+          "weeks": [
+            {
+              "week": 1,
+              "topic": "주제",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "1주차 슬라이드",
+                  "url": "https://..."
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습 코드",
+                  "url": "https://..."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "announcements": {
+      "id": "ann-2027-001",
+      "date": "2027-03-02",
+      "course": "과목명(선택)",
+      "title": "공지 제목",
+      "body": "내용(마크다운). 수식 $x^2$ 가능"
+    }
+  },
+  "semesters": [
+    {
+      "term": "2026-2학기",
+      "courses": [
+        {
+          "code": "STAT3xx",
+          "name": "시계열자료분석",
+          "description": "[샘플] 정상성, ACF/PACF, ARIMA, 예측까지 R로 직접 실습하는 과목입니다.",
+          "syllabusUrl": "https://example.com/syllabus-ts.pdf",
+          "weeks": [
+            {
+              "week": 1,
+              "topic": "시계열이란? 시각화와 분해",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "1주차 슬라이드",
+                  "url": "https://example.com/ts-w1.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습: 시계열 객체와 시각화 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "data",
+                  "label": "AirPassengers 데이터",
+                  "url": "https://github.com/"
+                }
+              ]
+            },
+            {
+              "week": 2,
+              "topic": "정상성과 자기상관함수(ACF)",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "2주차 슬라이드",
+                  "url": "https://example.com/ts-w2.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습: ACF/PACF 그리기 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "code-python",
+                  "label": "실습: statsmodels로 ACF (Python)",
+                  "url": "https://github.com/"
+                }
+              ]
+            },
+            {
+              "week": 3,
+              "topic": "AR·MA 모형",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "3주차 슬라이드",
+                  "url": "https://example.com/ts-w3.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습: arima.sim 시뮬레이션 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "assignment",
+                  "label": "과제 1",
+                  "url": "https://example.com/hw1.pdf"
+                }
+              ]
+            },
+            {
+              "week": 4,
+              "topic": "ARIMA 모형 적합과 진단",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "4주차 슬라이드",
+                  "url": "https://example.com/ts-w4.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습: auto.arima와 잔차 진단 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "code-sas",
+                  "label": "실습: PROC ARIMA (SAS)",
+                  "url": "https://github.com/"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "STAT2xx",
+          "name": "현대통계학실습",
+          "description": "[샘플] 자료 정리, 시각화, 회귀분석, 가설검정을 R·Python·SAS로 익힙니다.",
+          "syllabusUrl": "https://example.com/syllabus-prac.pdf",
+          "weeks": [
+            {
+              "week": 1,
+              "topic": "R·Python 환경 설정과 자료 불러오기",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "1주차 슬라이드",
+                  "url": "https://example.com/p-w1.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습 코드 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "code-python",
+                  "label": "실습 코드 (Python)",
+                  "url": "https://github.com/"
+                }
+              ]
+            },
+            {
+              "week": 2,
+              "topic": "기술통계와 시각화",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "2주차 슬라이드",
+                  "url": "https://example.com/p-w2.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "ggplot2 실습 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "data",
+                  "label": "실습 데이터셋",
+                  "url": "https://github.com/"
+                }
+              ]
+            },
+            {
+              "week": 3,
+              "topic": "단순·다중 회귀분석",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "3주차 슬라이드",
+                  "url": "https://example.com/p-w3.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "lm() 실습 (R)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "code-sas",
+                  "label": "PROC REG (SAS)",
+                  "url": "https://github.com/"
+                },
+                {
+                  "kind": "assignment",
+                  "label": "과제 1",
+                  "url": "https://example.com/p-hw1.pdf"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "term": "2026-1학기",
+      "courses": [
+        {
+          "code": "STAT4xx",
+          "name": "실험계획법",
+          "description": "[샘플] 요인설계, 블록설계, 반응표면법의 이론과 R 실습.",
+          "syllabusUrl": "https://example.com/syllabus-doe.pdf",
+          "weeks": [
+            {
+              "week": 1,
+              "topic": "실험계획의 기본 원리",
+              "resources": [
+                {
+                  "kind": "slides",
+                  "label": "1주차 슬라이드",
+                  "url": "https://example.com/d-w1.pdf"
+                },
+                {
+                  "kind": "code-r",
+                  "label": "실습 코드 (R)",
+                  "url": "https://github.com/"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann-2026-004",
+      "date": "2026-10-27",
+      "course": "시계열자료분석",
+      "title": "[샘플] 과제 1 제출 기한 안내",
+      "body": "과제 1은 **11월 3일(화) 23:59**까지 제출합니다.\n\n- ARIMA(1,0,0) 모형을 적합하고 잔차를 진단하세요.\n- 코드는 GitHub 링크로 제출합니다."
+    },
+    {
+      "id": "ann-2026-003",
+      "date": "2026-10-20",
+      "course": "현대통계학실습",
+      "title": "[샘플] 3주차 실습 안내",
+      "body": "다음 시간에는 회귀분석을 실습합니다. 회귀계수 추정식 $\\hat{\\beta}=(X^\\top X)^{-1}X^\\top y$ 를 미리 복습해 오세요."
+    },
+    {
+      "id": "ann-2026-002",
+      "date": "2026-09-02",
+      "title": "[샘플] 2학기 수업 시작 안내",
+      "body": "강의계획서는 각 과목 카드의 '강의계획서' 버튼에서 확인할 수 있습니다."
+    }
+  ]
+}
