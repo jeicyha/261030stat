@@ -11,6 +11,7 @@ const NAV = [
   { to: "/teaching", label: "수업" },
   { to: "/lab", label: "연구실" },
   { to: "/questions", label: "질문 게시판" },
+  { to: "/consult", label: "상담 신청" },
   { to: "/contact", label: "연락처" },
 ];
 
@@ -58,7 +59,7 @@ export default function Header() {
           하정철 <span className="font-normal text-slate-500 dark:text-slate-400">통계학 연구실</span>
         </Link>
 
-        <nav aria-label="주 메뉴" className="hidden lg:block">
+        <nav aria-label="주 메뉴" className="hidden xl:block">
           <ul className="flex items-center gap-1">
             {items.map((n) => (
               <li key={n.to}>
@@ -96,7 +97,7 @@ export default function Header() {
           )}
           <button
             type="button"
-            className="rounded-md p-2 lg:hidden hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800"
+            className="rounded-md p-2 xl:hidden hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label="메뉴 열기"
@@ -108,7 +109,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="모바일 메뉴" className="border-t border-slate-200 px-4 py-2 dark:border-slate-700 lg:hidden">
+        <nav id="mobile-nav" aria-label="모바일 메뉴" className="border-t border-slate-200 px-4 py-2 dark:border-slate-700 xl:hidden">
           <ul>
             {items.map((n) => (
               <li key={n.to} onClick={() => setOpen(false)}>

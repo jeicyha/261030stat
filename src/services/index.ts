@@ -5,8 +5,11 @@ import { createFirebaseAuthService, hasFirebaseConfig } from "./firebaseAuthServ
 import { createJsonDataService } from "./jsonDataService";
 import { createMockQuestionService } from "./mockQuestionService";
 import { createFirestoreQuestionService } from "./firestoreQuestionService";
+import { createMockConsultService } from "./mockConsultService";
+import { createFirestoreConsultService } from "./firestoreConsultService";
 
 export const authService = hasFirebaseConfig ? createFirebaseAuthService() : createMockAuthService();
 // 사이트 자료(논문·수업 등)는 아직 JSON입니다. Firestore 연동 시 교체합니다.
 export const dataService = createJsonDataService();
 export const questionService = hasFirebaseConfig ? createFirestoreQuestionService() : createMockQuestionService();
+export const consultService = hasFirebaseConfig ? createFirestoreConsultService() : createMockConsultService();

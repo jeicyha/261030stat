@@ -10,9 +10,9 @@ export default function DevRoleSwitch() {
   const { user, service } = useAuth();
   if (!service.devSetRole) return null;
   const set = service.devSetRole.bind(service);
-  const role = user?.role ?? "visitor";
+  const role = user?.role === "professor" ? "professor" : user ? "student" : "visitor";
 
-  const btn = (r: "professor" | "visitor", label: string) => (
+  const btn = (r: "professor" | "student" | "visitor", label: string) => (
     <button
       type="button"
       onClick={() => set(r)}
@@ -33,6 +33,7 @@ export default function DevRoleSwitch() {
     >
       <span className="px-1 text-[10px] text-navy-300">DEV</span>
       {btn("visitor", "방문자")}
+      {btn("student", "학생")}
       {btn("professor", "교수")}
     </div>
   );

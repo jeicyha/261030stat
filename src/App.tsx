@@ -7,6 +7,7 @@ import Teaching from "./pages/Teaching";
 import Lab from "./pages/Lab";
 import Contact from "./pages/Contact";
 import Questions from "./pages/Questions";
+import Consult from "./pages/Consult";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="lab" element={<Lab />} />
         <Route path="contact" element={<Contact />} />
         <Route path="questions" element={<Questions />} />
+        <Route path="consult" element={<Consult />} />
         <Route path="admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Route>

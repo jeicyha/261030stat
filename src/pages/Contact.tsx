@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import { ErrorBox, Loading } from "../components/ErrorBox";
 import { useAsync } from "../hooks/useAsync";
@@ -14,7 +15,7 @@ export default function Contact() {
   const rows: [string, React.ReactNode][] = [
     ["이메일", <a className="text-navy-700 underline dark:text-navy-300" href={`mailto:${data.email}`}>{data.email}</a>],
     ["연구실 위치", <>{data.office}{data.mapUrl && <> · <a className="text-navy-700 underline dark:text-navy-300" href={data.mapUrl} target="_blank" rel="noopener noreferrer">지도 보기</a></>}</>],
-    ["면담 가능 시간", data.officeHours],
+    ["면담 가능 시간", <>{data.officeHours} · <Link className="text-navy-700 underline dark:text-navy-300" to="/consult">상담 신청하기</Link></>],
   ];
 
   return (

@@ -1,5 +1,5 @@
-import { AuthNotAvailableError, type AuthService } from "./authService";
-import type { Role, User } from "./types";
+import { AuthNotAvailableError, type AuthService, type DevRole } from "./authService";
+import type { User } from "./types";
 
 /**
  * 지금 단계에서 쓰는 "가짜 로그인"입니다.
@@ -10,6 +10,13 @@ const PROFESSOR: User = {
   name: "하정철",
   email: "jeicy@kmu.kr",
   role: "professor",
+};
+
+const STUDENT: User = {
+  id: "mock-student",
+  name: "[샘플] 학생",
+  email: "student@example.com",
+  role: "visitor",
 };
 
 export function createMockAuthService(): AuthService {
@@ -34,8 +41,8 @@ export function createMockAuthService(): AuthService {
       user = null;
       emit();
     },
-    devSetRole(role: Role) {
-      user = role === "professor" ? PROFESSOR : null;
+    devSetRole(role: DevRole) {
+      user = role === "professor" ? PROFESSOR : role === "student" ? STUDENT : null;
       emit();
     },
   };

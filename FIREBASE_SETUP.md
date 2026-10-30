@@ -84,6 +84,42 @@ service cloud.firestore {
         || (request.auth != null && resource.data.authorId == request.auth.uid);
     }
 
+    // 상담 신청: 시간표(consultSlots)는 로그인한 사람이 읽기(예약자 이름 없음),
+    //            신청 내용(consultBookings)은 본인·교수만 읽기
+    match /consultSlots/{id} {
+      allow read: if request.auth != null;
+      allow create: if isProfessor()
+        && request.resource.data.keys().hasOnly(['start','end','mode','place','status'])
+        && request.resource.data.status == 'open';
+      allow update: if isProfessor()
+        // 학생 신청: 빈 시간 -> 예약됨 (이미 예약된 시간이면 거부되어 중복 신청 방지)
+        || (request.auth != null
+            && resource.data.status == 'open'
+            && request.resource.data.status == 'booked'
+            && request.resource.data.bookedBy == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','bookedBy']))
+        // 학생 본인 취소: 예약됨 -> 빈 시간
+        || (request.auth != null
+            && resource.data.bookedBy == request.auth.uid
+            && request.resource.data.status == 'open'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','bookedBy']));
+      allow delete: if isProfessor();
+    }
+    match /consultBookings/{slotId} {
+      allow read: if isProfessor()
+        || (request.auth != null && resource.data.studentId == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['studentId','studentName','studentEmail','topic','createdAt'])
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.studentEmail == request.auth.token.email
+        && request.resource.data.topic is string
+        && request.resource.data.topic.size() > 0 && request.resource.data.topic.size() <= 500
+        && get(/databases/$(database)/documents/consultSlots/$(slotId)).data.status == 'open'
+        && getAfter(/databases/$(database)/documents/consultSlots/$(slotId)).data.bookedBy == request.auth.uid;
+      allow delete: if isProfessor()
+        || (request.auth != null && resource.data.studentId == request.auth.uid);
+    }
+
     // 그 외 전부 차단
     match /{document=**} { allow read, write: if false; }
   }

@@ -180,3 +180,32 @@ export interface NewQuestion {
 }
 
 export const QUESTION_LIMITS = { title: 100, body: 3000, answer: 3000 } as const;
+
+// ── 상담 신청 ───────────────────────────────────────
+export type ConsultMode = "대면" | "온라인";
+
+export interface ConsultBooking {
+  studentName: string;
+  studentEmail: string;
+  topic: string;
+}
+
+export interface ConsultSlot {
+  id: string;
+  start: number; // 밀리초
+  end: number;
+  mode: ConsultMode;
+  place?: string; // 장소 또는 온라인 링크
+  status: "open" | "booked";
+  bookedBy?: string; // 신청한 사용자 id (이름은 저장하지 않음)
+  booking?: ConsultBooking; // 본인·교수에게만 불러옴
+}
+
+export interface NewSlot {
+  start: number;
+  end: number;
+  mode: ConsultMode;
+  place?: string;
+}
+
+export const CONSULT_TOPIC_MAX = 500;
