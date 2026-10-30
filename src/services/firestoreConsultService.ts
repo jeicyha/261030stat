@@ -61,7 +61,7 @@ export function createFirestoreConsultService(): ConsultService {
             const b = await getDoc(doc(db, BOOKINGS, s.id));
             if (b.exists()) {
               const x = b.data();
-              s.booking = { studentName: x.studentName, studentEmail: x.studentEmail, topic: x.topic };
+              s.booking = { studentName: x.studentName, grade: x.grade, studentEmail: x.studentEmail, topic: x.topic };
             }
           }),
       );
@@ -91,14 +91,15 @@ export function createFirestoreConsultService(): ConsultService {
       await batch.commit();
     },
 
-    async book(user, slotId, topic) {
+    async book(user, slotId, input) {
       const batch = writeBatch(db);
       batch.update(doc(db, SLOTS, slotId), { status: "booked", bookedBy: user.id });
       batch.set(doc(db, BOOKINGS, slotId), {
         studentId: user.id,
-        studentName: user.name,
+        studentName: input.name,
+        grade: input.grade,
         studentEmail: user.email,
-        topic,
+        topic: input.topic,
         createdAt: serverTimestamp(),
       });
       try {

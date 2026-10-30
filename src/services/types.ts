@@ -184,9 +184,20 @@ export const QUESTION_LIMITS = { title: 100, body: 3000, answer: 3000 } as const
 // ── 상담 신청 ───────────────────────────────────────
 export type ConsultMode = "대면" | "온라인";
 
+export const GRADES = ["1학년", "2학년", "3학년", "4학년", "석사과정", "박사과정", "기타"] as const;
+export type Grade = (typeof GRADES)[number];
+
 export interface ConsultBooking {
-  studentName: string;
+  studentName: string; // 신청자가 직접 입력한 이름
+  grade: Grade;
   studentEmail: string;
+  topic: string;
+}
+
+/** 학생이 신청할 때 입력하는 내용 */
+export interface BookingInput {
+  name: string;
+  grade: Grade;
   topic: string;
 }
 
@@ -209,3 +220,4 @@ export interface NewSlot {
 }
 
 export const CONSULT_TOPIC_MAX = 500;
+export const CONSULT_NAME_MAX = 30;

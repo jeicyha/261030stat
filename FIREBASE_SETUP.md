@@ -109,9 +109,12 @@ service cloud.firestore {
       allow read: if isProfessor()
         || (request.auth != null && resource.data.studentId == request.auth.uid);
       allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(['studentId','studentName','studentEmail','topic','createdAt'])
+        && request.resource.data.keys().hasOnly(['studentId','studentName','grade','studentEmail','topic','createdAt'])
         && request.resource.data.studentId == request.auth.uid
         && request.resource.data.studentEmail == request.auth.token.email
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() > 0 && request.resource.data.studentName.size() <= 30
+        && request.resource.data.grade in ['1학년','2학년','3학년','4학년','석사과정','박사과정','기타']
         && request.resource.data.topic is string
         && request.resource.data.topic.size() > 0 && request.resource.data.topic.size() <= 500
         && get(/databases/$(database)/documents/consultSlots/$(slotId)).data.status == 'open'

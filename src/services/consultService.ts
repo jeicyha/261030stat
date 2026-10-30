@@ -1,4 +1,4 @@
-import type { ConsultSlot, NewSlot, Page, PageOptions, User } from "./types";
+import type { BookingInput, ConsultSlot, NewSlot, Page, PageOptions, User } from "./types";
 
 /**
  * 상담 신청 데이터 접근 "약속(인터페이스)".
@@ -12,7 +12,7 @@ export interface ConsultService {
   /** 교수: 시간 삭제(신청 내용도 함께 삭제) */
   deleteSlot(id: string): Promise<void>;
   /** 학생: 신청. 이미 예약된 시간이면 오류(code: "slot-taken") */
-  book(user: User, slotId: string, topic: string): Promise<void>;
+  book(user: User, slotId: string, input: BookingInput): Promise<void>;
   /** 학생 본인 또는 교수: 예약 취소 */
   cancel(slotId: string): Promise<void>;
 }

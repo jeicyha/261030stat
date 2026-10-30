@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import PageHeader from "../components/PageHeader";
+import MultiCalendar from "../components/MultiCalendar";
 import { ErrorBox, Loading } from "../components/ErrorBox";
 import { useAuth } from "../context/AuthContext";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { consultService } from "../services";
-import { CONSULT_TOPIC_MAX, type ConsultMode, type ConsultSlot, type NewSlot, type User } from "../services/types";
+import { CONSULT_NAME_MAX, CONSULT_TOPIC_MAX, GRADES, type ConsultMode, type Grade, type ConsultSlot, type NewSlot, type User } from "../services/types";
 
 const PAGE_SIZE = 30;
 const TZ = "Asia/Seoul";
@@ -24,20 +25,25 @@ function errorText(e: unknown): string {
   return "처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.";
 }
 
-/** 교수: 날짜 + 시작/종료 시각 + 상담 길이로 여러 칸 만들기 (한국 시간 기준) */
-function buildSlots(date: string, from: string, to: string, minutes: number, mode: ConsultMode, place: string): NewSlot[] {
-  const start = new Date(`${date}T${from}:00+09:00`).getTime();
-  const end = new Date(`${date}T${to}:00+09:00`).getTime();
+const MAX_SLOTS = 100;
+
+/** 교수: 선택한 날짜들 × (시작~종료를 상담 길이로 나눈 칸) 만들기 (한국 시간 기준) */
+function buildSlots(dates: string[], from: string, to: string, minutes: number, mode: ConsultMode, place: string): NewSlot[] {
   const out: NewSlot[] = [];
-  if (!(end > start) || minutes < 5) return out;
-  for (let t = start; t + minutes * 60000 <= end && out.length < 40; t += minutes * 60000) {
-    out.push({ start: t, end: t + minutes * 60000, mode, place: place.trim() || undefined });
+  if (minutes < 5) return out;
+  for (const date of [...dates].sort()) {
+    const start = new Date(`${date}T${from}:00+09:00`).getTime();
+    const end = new Date(`${date}T${to}:00+09:00`).getTime();
+    if (!(end > start)) return [];
+    for (let t = start; t + minutes * 60000 <= end; t += minutes * 60000) {
+      out.push({ start: t, end: t + minutes * 60000, mode, place: place.trim() || undefined });
+    }
   }
   return out;
 }
 
-function AddSlotsForm({ onDone }: { onDone: () => void }) {
-  const [date, setDate] = useState("");
+function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: string[] }) {
+  const [dates, setDates] = useState<string[]>([]);
   const [from, setFrom] = useState("15:00");
   const [to, setTo] = useState("17:00");
   const [minutes, setMinutes] = useState(30);
@@ -45,16 +51,18 @@ function AddSlotsForm({ onDone }: { onDone: () => void }) {
   const [place, setPlace] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const preview = useMemo(() => (date ? buildSlots(date, from, to, minutes, mode, place) : []), [date, from, to, minutes, mode, place]);
+  const preview = useMemo(() => buildSlots(dates, from, to, minutes, mode, place), [dates, from, to, minutes, mode, place]);
+  const tooMany = preview.length > MAX_SLOTS;
+  const toggle = (d: string) => setDates((cur) => (cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d]));
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!preview.length) return;
+    if (!preview.length || tooMany) return;
     setBusy(true);
     setErr("");
     try {
       await consultService.createSlots(preview);
-      setDate("");
+      setDates([]);
       onDone();
     } catch (x) {
       setErr(errorText(x));
@@ -63,35 +71,57 @@ function AddSlotsForm({ onDone }: { onDone: () => void }) {
     }
   };
 
+  const summary = !dates.length
+    ? "달력에서 상담이 가능한 날짜를 클릭하세요. 시간은 한국 시간 기준입니다."
+    : !preview.length
+      ? "시간 범위를 확인해 주세요. (종료가 시작보다 늦어야 하고, 상담 시간보다 길어야 합니다)"
+      : tooMany
+        ? `한 번에 ${MAX_SLOTS}칸까지만 등록할 수 있습니다. (현재 ${preview.length}칸) 날짜나 시간 범위를 줄여 주세요.`
+        : `${dates.length}일 × ${from}–${to} (${minutes}분 단위) = 총 ${preview.length}칸이 만들어집니다.`;
+
   return (
-    <form onSubmit={submit} className="mb-8 space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-700 dark:bg-slate-800">
+    <form onSubmit={submit} className="mb-8 space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-700 dark:bg-slate-800">
       <h2 className="section-title">상담 가능 시간 등록 (교수 전용)</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div><label htmlFor="c-date" className="text-sm font-medium">날짜</label><input id="c-date" type="date" required className={field} value={date} onChange={(e) => setDate(e.target.value)} /></div>
-        <div><label htmlFor="c-from" className="text-sm font-medium">시작</label><input id="c-from" type="time" required className={field} value={from} onChange={(e) => setFrom(e.target.value)} /></div>
-        <div><label htmlFor="c-to" className="text-sm font-medium">종료</label><input id="c-to" type="time" required className={field} value={to} onChange={(e) => setTo(e.target.value)} /></div>
+      <div className="grid gap-6 lg:grid-cols-[auto,1fr]">
         <div>
-          <label htmlFor="c-min" className="text-sm font-medium">1회 상담 시간</label>
-          <select id="c-min" className={field} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}>
-            {[15, 20, 30, 45, 60].map((m) => <option key={m} value={m}>{m}분</option>)}
-          </select>
+          <p className="mb-2 text-sm font-medium">① 날짜 선택</p>
+          <MultiCalendar selected={dates} onToggle={toggle} marked={markedDays} />
         </div>
-        <div>
-          <label htmlFor="c-mode" className="text-sm font-medium">방식</label>
-          <select id="c-mode" className={field} value={mode} onChange={(e) => setMode(e.target.value as ConsultMode)}>
-            <option>대면</option><option>온라인</option>
-          </select>
-        </div>
-        <div className="sm:col-span-2 lg:col-span-3">
-          <label htmlFor="c-place" className="text-sm font-medium">장소 또는 온라인 링크 (선택)</label>
-          <input id="c-place" className={field} maxLength={200} value={place} onChange={(e) => setPlace(e.target.value)} placeholder="예: ○○관 ○○○호 / https://meet.google.com/..." />
+        <div className="space-y-3">
+          <p className="text-sm font-medium">② 시간·방식 (선택한 모든 날짜에 똑같이 적용)</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div><label htmlFor="c-from" className="text-sm">시작</label><input id="c-from" type="time" required className={field} value={from} onChange={(e) => setFrom(e.target.value)} /></div>
+            <div><label htmlFor="c-to" className="text-sm">종료</label><input id="c-to" type="time" required className={field} value={to} onChange={(e) => setTo(e.target.value)} /></div>
+            <div>
+              <label htmlFor="c-min" className="text-sm">1회 상담 시간</label>
+              <select id="c-min" className={field} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}>
+                {[15, 20, 30, 45, 60].map((m) => <option key={m} value={m}>{m}분</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-mode" className="text-sm">방식</label>
+              <select id="c-mode" className={field} value={mode} onChange={(e) => setMode(e.target.value as ConsultMode)}>
+                <option>대면</option><option>온라인</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label htmlFor="c-place" className="text-sm">장소 또는 온라인 링크 (선택)</label>
+            <input id="c-place" className={field} maxLength={200} value={place} onChange={(e) => setPlace(e.target.value)} placeholder="예: ○○관 ○○○호 / https://meet.google.com/..." />
+          </div>
+          {dates.length > 0 && (
+            <div className="flex flex-wrap gap-1.5" aria-label="선택한 날짜">
+              {[...dates].sort().map((d) => (
+                <button key={d} type="button" onClick={() => toggle(d)} aria-label={`${d} 선택 해제`}
+                  className="rounded-full bg-accent-100 px-2.5 py-0.5 text-xs text-accent-700 hover:bg-accent-300 dark:bg-slate-700 dark:text-accent-300">{d.slice(5).replace("-", "/")} ✕</button>
+              ))}
+            </div>
+          )}
+          <p className="text-sm text-slate-600 dark:text-slate-300" role="status">{summary}</p>
+          <button type="submit" className={btn} disabled={busy || !preview.length || tooMany}>{busy ? "등록 중…" : "시간 등록"}</button>
+          {err && <p role="alert" className="text-sm text-red-700 dark:text-red-300">{err}</p>}
         </div>
       </div>
-      <p className="text-sm text-slate-600 dark:text-slate-300" role="status">
-        {date ? (preview.length ? `${dateLabel(preview[0].start)} ${timeLabel(preview[0].start)}–${timeLabel(preview[preview.length - 1].end)} 에 ${minutes}분짜리 ${preview.length}칸이 만들어집니다.` : "시간 범위를 확인해 주세요. (종료가 시작보다 늦어야 합니다)") : "날짜를 선택하면 만들어질 칸 수가 표시됩니다. 시간은 한국 시간 기준입니다."}
-      </p>
-      <button type="submit" className={btn} disabled={busy || !preview.length}>{busy ? "등록 중…" : "시간 등록"}</button>
-      {err && <p role="alert" className="text-sm text-red-700 dark:text-red-300">{err}</p>}
     </form>
   );
 }
@@ -99,6 +129,8 @@ function AddSlotsForm({ onDone }: { onDone: () => void }) {
 function SlotRow({ s, user, isProfessor, onChanged, onError }: { s: ConsultSlot; user: User; isProfessor: boolean; onChanged: () => void; onError: (m: string) => void }) {
   const [asking, setAsking] = useState(false);
   const [topic, setTopic] = useState("");
+  const [name, setName] = useState(user.name);
+  const [grade, setGrade] = useState<Grade>("1학년");
   const [busy, setBusy] = useState(false);
   const mine = s.bookedBy === user.id;
 
@@ -134,17 +166,30 @@ function SlotRow({ s, user, isProfessor, onChanged, onError }: { s: ConsultSlot;
       </div>
       {s.booking && (
         <p className="mt-2 rounded-lg bg-slate-100 p-3 text-sm dark:bg-slate-900">
-          {isProfessor && <><strong>{s.booking.studentName}</strong> ({s.booking.studentEmail}) · </>}
-          상담 주제: {s.booking.topic}
+          <strong>{s.booking.studentName}</strong> ({s.booking.grade}){isProfessor && <> · {s.booking.studentEmail}</>} · 상담 주제: {s.booking.topic}
         </p>
       )}
       {asking && (
-        <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); if (topic.trim()) void run(() => consultService.book(user, s.id, topic.trim())); }}>
-          <label htmlFor={`t-${s.id}`} className="text-sm font-medium">상담 주제 (무엇을 상담하고 싶은가요?)</label>
-          <textarea id={`t-${s.id}`} required rows={3} maxLength={CONSULT_TOPIC_MAX} className={field} value={topic} onChange={(e) => setTopic(e.target.value)} />
-          <p className="text-xs text-slate-500 dark:text-slate-400">이름({user.name})과 이메일({user.email})이 교수에게 전달됩니다.</p>
+        <form className="mt-3 space-y-3" onSubmit={(e) => { e.preventDefault(); if (name.trim() && topic.trim()) void run(() => consultService.book(user, s.id, { name: name.trim(), grade, topic: topic.trim() })); }}>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor={`n-${s.id}`} className="text-sm font-medium">이름</label>
+              <input id={`n-${s.id}`} required maxLength={CONSULT_NAME_MAX} className={field} value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor={`g-${s.id}`} className="text-sm font-medium">학년</label>
+              <select id={`g-${s.id}`} className={field} value={grade} onChange={(e) => setGrade(e.target.value as Grade)}>
+                {GRADES.map((g) => <option key={g}>{g}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label htmlFor={`t-${s.id}`} className="text-sm font-medium">상담 주제 (무엇을 상담하고 싶은가요?)</label>
+            <textarea id={`t-${s.id}`} required rows={3} maxLength={CONSULT_TOPIC_MAX} className={field} value={topic} onChange={(e) => setTopic(e.target.value)} />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">이름·학년·주제와 로그인 이메일({user.email})이 교수에게 전달됩니다. 다른 학생에게는 보이지 않습니다.</p>
           <div className="flex gap-2">
-            <button type="submit" className={btn} disabled={busy || !topic.trim()}>{busy ? "신청 중…" : "신청 확정"}</button>
+            <button type="submit" className={btn} disabled={busy || !name.trim() || !topic.trim()}>{busy ? "신청 중…" : "신청 확정"}</button>
             <button type="button" className={ghost} onClick={() => setAsking(false)}>취소</button>
           </div>
         </form>
@@ -197,7 +242,7 @@ export default function Consult() {
         </div>
       ) : (
         <>
-          {isProfessor && <AddSlotsForm onDone={reload} />}
+          {isProfessor && <AddSlotsForm onDone={reload} markedDays={days} />}
           {!isProfessor && myCount > 0 && (
             <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100" role="status">내 예약이 {myCount}건 있습니다. 변경하려면 예약 취소 후 다시 신청해 주세요.</p>
           )}
