@@ -33,12 +33,17 @@ export default function Header() {
     try {
       await service.signInWithGoogle();
     } catch (e) {
+      console.error("로그인 오류", e);
       const code = (e as { code?: string }).code ?? "";
       if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
       setLoginError(
         code === "auth/unauthorized-domain"
           ? "이 주소가 Firebase '승인된 도메인'에 없습니다. FIREBASE_SETUP.md 4번을 확인하세요."
-          : "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+          : code === "auth/operation-not-allowed"
+            ? "Firebase에서 구글 로그인이 아직 '사용 설정'되지 않았습니다. (auth/operation-not-allowed)"
+            : code === "auth/popup-blocked"
+              ? "브라우저가 팝업을 막았습니다. 이 사이트의 팝업을 허용해 주세요."
+              : `로그인에 실패했습니다. 잠시 후 다시 시도해 주세요. (오류 코드: ${code || "알 수 없음"})`,
       );
     }
   };
