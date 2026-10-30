@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 포인트 색상 (화사한 하늘~청록). 바꾸고 싶으면 이 값만 수정하세요.
-        accent: { 50: "#ecfeff", 100: "#cffafe", 300: "#67e8f9", 500: "#06b6d4", 600: "#0891b2", 700: "#0e7490" },
+        // 포인트 색상 (화사한 보라). 바꾸고 싶으면 이 값만 수정하세요.
+        accent: { 50: "#f5f3ff", 100: "#ede9fe", 300: "#c4b5fd", 500: "#8b5cf6", 600: "#7c3aed", 700: "#6d28d9" },
         // 네이비 계열 (사이트 대표색). 바꾸고 싶으면 이 값만 수정하세요.
         navy: {
           50: "#f1f4f9",
@@ -23,7 +23,7 @@ export default {
         },
       },
       boxShadow: {
-        soft: "0 4px 24px -6px rgba(45, 67, 105, 0.15)",
+        soft: "0 4px 24px -6px rgba(76, 29, 149, 0.16)",
       },
       fontFamily: {
         sans: ['"Pretendard Variable"', "Pretendard", '"Noto Sans KR"', "system-ui", "sans-serif"],
