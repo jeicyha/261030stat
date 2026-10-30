@@ -40,31 +40,32 @@ npm install firebase
 4. `DevRoleSwitch`는 `devSetRole`이 없는 서비스에서는 자동으로 숨지며, 파일 삭제 후 `Layout.tsx`의 한 줄을 지우면 됩니다.
 5. 관리 페이지(`src/pages/Admin.tsx`)에 입력 폼을 추가해 JSON 대신 Firestore에 저장.
 
-## 6. 교수 이메일 기반 관리자 권한 + Firestore 보안 규칙 초안
+## 6. 교수 이메일 기반 관리자 권한 + Firestore 보안 규칙 (최종본)
 
 화면에서 "관리" 메뉴를 숨기는 것만으로는 보안이 되지 않습니다. **반드시 규칙으로 쓰기를 막아야 합니다.**
-Firebase → Firestore → **규칙** 탭에 아래 초안을 붙여 넣고(이메일 확인 후) 게시하세요.
+Firebase → Firestore → **규칙** 탭의 내용을 모두 지우고 아래 전체를 붙여 넣은 뒤 **게시**하세요.
+(질문 게시판, 상담 신청 규칙까지 모두 합친 하나의 완성본입니다. 기능을 추가할 때마다 이 하나만 갱신합니다.)
 
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // 교수 = 구글 로그인 + 이메일 인증 완료 + 지정한 이메일
     function isProfessor() {
       return request.auth != null
         && request.auth.token.email == 'jeicy@kmu.kr'
         && request.auth.token.email_verified == true;
     }
-    function isSignedIn() { return request.auth != null; }
 
-    // 공개 콘텐츠: 누구나 읽기, 교수만 쓰기
+    // ── 공개 콘텐츠: 누구나 읽기, 교수만 쓰기 ──
+    match /profile/{id}      { allow read: if true; allow write: if isProfessor(); }
     match /publications/{id} { allow read: if true; allow write: if isProfessor(); }
     match /courses/{id}      { allow read: if true; allow write: if isProfessor(); }
     match /updates/{id}      { allow read: if true; allow write: if isProfessor(); }
     match /members/{id}      { allow read: if true; allow write: if isProfessor(); }
-    match /profile/{id}      { allow read: if true; allow write: if isProfessor(); }
 
-    // 질문 게시판: 로그인한 사람만 읽기·작성, 답변은 교수만, 삭제는 본인·교수
+    // ── 질문 게시판: 로그인한 사람만 읽기·작성, 답변은 교수만, 삭제는 본인·교수 ──
     match /questions/{id} {
       allow read: if request.auth != null;
       allow create: if request.auth != null
@@ -76,7 +77,6 @@ service cloud.firestore {
         && request.resource.data.body is string
         && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 3000
         && request.resource.data.createdAt == request.time;
-      // 교수만 answer, answeredAt 두 항목을 바꿀 수 있음
       allow update: if isProfessor()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answer','answeredAt'])
         && request.resource.data.answer.size() <= 3000;
@@ -84,15 +84,21 @@ service cloud.firestore {
         || (request.auth != null && resource.data.authorId == request.auth.uid);
     }
 
-    // 상담 신청: 시간표(consultSlots)는 로그인한 사람이 읽기(예약자 이름 없음),
-    //            신청 내용(consultBookings)은 본인·교수만 읽기
+    // ── 상담 시간표: 로그인한 사람이 읽기(예약자 이름 없음) ──
     match /consultSlots/{id} {
       allow read: if request.auth != null;
+      // 교수만 새 시간 생성. 이미 있는 문서를 덮어쓰는 set은 update로 처리되어 아래에서 거부됨(중복·예약 덮어쓰기 방지)
       allow create: if isProfessor()
         && request.resource.data.keys().hasOnly(['start','end','mode','place','status'])
+        && request.resource.data.mode in ['대면','온라인']
         && request.resource.data.status == 'open';
-      allow update: if isProfessor()
-        // 학생 신청: 빈 시간 -> 예약됨 (이미 예약된 시간이면 거부되어 중복 신청 방지)
+      allow update:
+        // 교수: 예약된 시간을 빈 시간으로 되돌리기(예약 취소)만 가능
+        if (isProfessor()
+            && resource.data.status == 'booked'
+            && request.resource.data.status == 'open'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','bookedBy']))
+        // 학생 신청: 빈 시간 -> 예약됨 (이미 예약된 시간이면 거부 = 중복 신청 방지)
         || (request.auth != null
             && resource.data.status == 'open'
             && request.resource.data.status == 'booked'
@@ -105,6 +111,8 @@ service cloud.firestore {
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','bookedBy']));
       allow delete: if isProfessor();
     }
+
+    // ── 상담 신청 내용(이름·학년·주제): 본인·교수만 읽기 ──
     match /consultBookings/{slotId} {
       allow read: if isProfessor()
         || (request.auth != null && resource.data.studentId == request.auth.uid);
@@ -123,7 +131,7 @@ service cloud.firestore {
         || (request.auth != null && resource.data.studentId == request.auth.uid);
     }
 
-    // 그 외 전부 차단
+    // ── 그 외 모든 경로는 차단 ──
     match /{document=**} { allow read, write: if false; }
   }
 }

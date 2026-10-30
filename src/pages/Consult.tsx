@@ -5,7 +5,7 @@ import { ErrorBox, Loading } from "../components/ErrorBox";
 import { useAuth } from "../context/AuthContext";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { consultService } from "../services";
-import { CONSULT_NAME_MAX, CONSULT_TOPIC_MAX, GRADES, type ConsultMode, type Grade, type ConsultSlot, type NewSlot, type User } from "../services/types";
+import { BUILDINGS, CONSULT_NAME_MAX, CONSULT_TOPIC_MAX, GRADES, type ConsultMode, type Grade, type ConsultSlot, type NewSlot, type User } from "../services/types";
 
 const PAGE_SIZE = 30;
 const TZ = "Asia/Seoul";
@@ -42,16 +42,23 @@ function buildSlots(dates: string[], from: string, to: string, minutes: number, 
   return out;
 }
 
-function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: string[] }) {
+function AddSlotsForm({ onDone, markedDays, existing }: { onDone: () => void; markedDays: string[]; existing: ConsultSlot[] }) {
   const [dates, setDates] = useState<string[]>([]);
   const [from, setFrom] = useState("15:00");
   const [to, setTo] = useState("17:00");
   const [minutes, setMinutes] = useState(30);
   const [mode, setMode] = useState<ConsultMode>("대면");
-  const [place, setPlace] = useState("");
+  const [building, setBuilding] = useState<(typeof BUILDINGS)[number]>(BUILDINGS[0]);
+  const [detail, setDetail] = useState(""); // 호실 (선택)
+  const [link, setLink] = useState(""); // 온라인 링크 (선택)
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const preview = useMemo(() => buildSlots(dates, from, to, minutes, mode, place), [dates, from, to, minutes, mode, place]);
+  const [notice, setNotice] = useState("");
+  const place = mode === "대면" ? `${building}${detail.trim() ? ` ${detail.trim()}` : ""}` : link;
+  const all = useMemo(() => buildSlots(dates, from, to, minutes, mode, place), [dates, from, to, minutes, mode, place]);
+  // 이미 열려 있는(겹치는) 시간은 제외하고 보여 줍니다 (서버에서도 한 번 더 확인)
+  const preview = useMemo(() => all.filter((n) => !existing.some((s) => s.start < n.end && s.end > n.start)), [all, existing]);
+  const dup = all.length - preview.length;
   const tooMany = preview.length > MAX_SLOTS;
   const toggle = (d: string) => setDates((cur) => (cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d]));
 
@@ -60,8 +67,10 @@ function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: 
     if (!preview.length || tooMany) return;
     setBusy(true);
     setErr("");
+    setNotice("");
     try {
-      await consultService.createSlots(preview);
+      const r = await consultService.createSlots(preview);
+      setNotice(`${r.created}칸을 등록했습니다.${r.skipped ? ` (이미 있는 ${r.skipped}칸은 건너뛰었습니다)` : ""}`);
       setDates([]);
       onDone();
     } catch (x) {
@@ -73,11 +82,13 @@ function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: 
 
   const summary = !dates.length
     ? "달력에서 상담이 가능한 날짜를 클릭하세요. 시간은 한국 시간 기준입니다."
-    : !preview.length
+    : !all.length
       ? "시간 범위를 확인해 주세요. (종료가 시작보다 늦어야 하고, 상담 시간보다 길어야 합니다)"
+      : !preview.length
+        ? `선택한 ${all.length}칸은 모두 이미 등록되어 있어 새로 만들 칸이 없습니다.`
       : tooMany
         ? `한 번에 ${MAX_SLOTS}칸까지만 등록할 수 있습니다. (현재 ${preview.length}칸) 날짜나 시간 범위를 줄여 주세요.`
-        : `${dates.length}일 × ${from}–${to} (${minutes}분 단위) = 총 ${preview.length}칸이 만들어집니다.`;
+        : `${dates.length}일 × ${from}–${to} (${minutes}분 단위) = 새로 ${preview.length}칸이 만들어집니다.${dup ? ` (이미 있는 ${dup}칸 제외)` : ""}`;
 
   return (
     <form onSubmit={submit} className="mb-8 space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-slate-700 dark:bg-slate-800">
@@ -105,10 +116,25 @@ function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: 
               </select>
             </div>
           </div>
-          <div>
-            <label htmlFor="c-place" className="text-sm">장소 또는 온라인 링크 (선택)</label>
-            <input id="c-place" className={field} maxLength={200} value={place} onChange={(e) => setPlace(e.target.value)} placeholder="예: ○○관 ○○○호 / https://meet.google.com/..." />
-          </div>
+          {mode === "대면" ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="c-building" className="text-sm">장소(건물)</label>
+                <select id="c-building" className={field} value={building} onChange={(e) => setBuilding(e.target.value as (typeof BUILDINGS)[number])}>
+                  {BUILDINGS.map((b) => <option key={b}>{b}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="c-detail" className="text-sm">호실 (선택)</label>
+                <input id="c-detail" className={field} maxLength={30} value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="예: 301호" />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="c-link" className="text-sm">온라인 링크 (선택)</label>
+              <input id="c-link" className={field} maxLength={200} value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://meet.google.com/..." />
+            </div>
+          )}
           {dates.length > 0 && (
             <div className="flex flex-wrap gap-1.5" aria-label="선택한 날짜">
               {[...dates].sort().map((d) => (
@@ -120,6 +146,7 @@ function AddSlotsForm({ onDone, markedDays }: { onDone: () => void; markedDays: 
           <p className="text-sm text-slate-600 dark:text-slate-300" role="status">{summary}</p>
           <button type="submit" className={btn} disabled={busy || !preview.length || tooMany}>{busy ? "등록 중…" : "시간 등록"}</button>
           {err && <p role="alert" className="text-sm text-red-700 dark:text-red-300">{err}</p>}
+          {notice && <p role="status" className="text-sm text-emerald-700 dark:text-emerald-300">{notice}</p>}
         </div>
       </div>
     </form>
@@ -242,7 +269,7 @@ export default function Consult() {
         </div>
       ) : (
         <>
-          {isProfessor && <AddSlotsForm onDone={reload} markedDays={days} />}
+          {isProfessor && <AddSlotsForm onDone={reload} markedDays={days} existing={slots} />}
           {!isProfessor && myCount > 0 && (
             <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100" role="status">내 예약이 {myCount}건 있습니다. 변경하려면 예약 취소 후 다시 신청해 주세요.</p>
           )}

@@ -9,8 +9,8 @@ export function createMockConsultService(): ConsultService {
     return new Date(`${day}T${String(h).padStart(2, "0")}:00:00+09:00`).getTime();
   };
   let slots: ConsultSlot[] = [
-    { id: "s1", start: at(1, 15), end: at(1, 15) + 1800000, mode: "대면", place: "[샘플] ○○관 ○○○호", status: "open" },
-    { id: "s2", start: at(1, 15) + 1800000, end: at(1, 16), mode: "대면", place: "[샘플] ○○관 ○○○호", status: "open" },
+    { id: "s1", start: at(1, 15), end: at(1, 15) + 1800000, mode: "대면", place: "백은관 [샘플] ○○○호", status: "open" },
+    { id: "s2", start: at(1, 15) + 1800000, end: at(1, 16), mode: "대면", place: "백은관 [샘플] ○○○호", status: "open" },
     { id: "s3", start: at(3, 10), end: at(3, 10) + 1800000, mode: "온라인", place: "https://meet.google.com/", status: "open" },
   ];
   let bookings: Record<string, ConsultBooking> = {};
@@ -27,7 +27,9 @@ export function createMockConsultService(): ConsultService {
       return { items: page, nextCursor: end < upcoming.length ? String(end) : null };
     },
     async createSlots(news) {
-      slots = [...slots, ...news.map((n, i) => ({ ...n, id: `n${Date.now()}${i}`, status: "open" as const }))];
+      const fresh = news.filter((n) => !slots.some((s) => s.start < n.end && s.end > n.start));
+      slots = [...slots, ...fresh.map((n, i) => ({ ...n, id: `n${Date.now()}${i}`, status: "open" as const }))];
+      return { created: fresh.length, skipped: news.length - fresh.length };
     },
     async deleteSlot(id) {
       slots = slots.filter((s) => s.id !== id);

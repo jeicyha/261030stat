@@ -70,8 +70,19 @@ export function createFirestoreConsultService(): ConsultService {
     },
 
     async createSlots(news) {
+      if (!news.length) return { created: 0, skipped: 0 };
+      // 새 시간 범위 주변에 이미 있는 시간을 한 번 조회 (상담은 최대 60분이라 1시간 앞부터 확인)
+      const from = Math.min(...news.map((n) => n.start)) - 3600000;
+      const to = Math.max(...news.map((n) => n.end));
+      const exist = await getDocs(
+        query(slotsCol, where("start", ">=", Timestamp.fromMillis(from)), where("start", "<", Timestamp.fromMillis(to)), orderBy("start", "asc")),
+      );
+      const taken = exist.docs.map((d) => ({ s: (d.data().start as Timestamp).toMillis(), e: (d.data().end as Timestamp).toMillis() }));
+      const fresh = news.filter((n) => !taken.some((t) => t.s < n.end && t.e > n.start));
+      if (!fresh.length) return { created: 0, skipped: news.length };
+
       const batch = writeBatch(db);
-      for (const n of news) {
+      for (const n of fresh) {
         const data: Record<string, unknown> = {
           start: Timestamp.fromMillis(n.start),
           end: Timestamp.fromMillis(n.end),
@@ -79,9 +90,11 @@ export function createFirestoreConsultService(): ConsultService {
           status: "open",
         };
         if (n.place) data.place = n.place;
-        batch.set(doc(slotsCol), data);
+        // 시작 시각을 문서 번호로 사용 → 같은 시간은 같은 번호라 덮어쓰기가 불가능(규칙이 막음)
+        batch.set(doc(db, SLOTS, `s${n.start}`), data);
       }
       await batch.commit();
+      return { created: fresh.length, skipped: news.length - fresh.length };
     },
 
     async deleteSlot(id) {

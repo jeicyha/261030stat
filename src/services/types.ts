@@ -184,6 +184,15 @@ export const QUESTION_LIMITS = { title: 100, body: 3000, answer: 3000 } as const
 // ── 상담 신청 ───────────────────────────────────────
 export type ConsultMode = "대면" | "온라인";
 
+/** 대면 상담 장소 (건물) */
+export const BUILDINGS = ["백은관", "행소관"] as const;
+
+/** 시간 등록 결과: 이미 있는(겹치는) 시간은 건너뜁니다 */
+export interface CreateSlotsResult {
+  created: number;
+  skipped: number;
+}
+
 export const GRADES = ["1학년", "2학년", "3학년", "4학년", "석사과정", "박사과정", "기타"] as const;
 export type Grade = (typeof GRADES)[number];
 
