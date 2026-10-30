@@ -64,14 +64,24 @@ service cloud.firestore {
     match /members/{id}      { allow read: if true; allow write: if isProfessor(); }
     match /profile/{id}      { allow read: if true; allow write: if isProfessor(); }
 
-    // 나중 기능 예시 (수업 질문 게시판): 로그인한 사람만 작성, 본인·교수만 수정/삭제
+    // 질문 게시판: 로그인한 사람만 읽기·작성, 답변은 교수만, 삭제는 본인·교수
     match /questions/{id} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn()
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['authorId','authorName','course','title','body','createdAt'])
         && request.resource.data.authorId == request.auth.uid
-        && request.resource.data.body.size() < 5000;
-      allow update, delete: if isProfessor()
-        || (isSignedIn() && resource.data.authorId == request.auth.uid);
+        && request.resource.data.authorName == request.auth.token.get('name', request.auth.token.email)
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 100
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 3000
+        && request.resource.data.createdAt == request.time;
+      // 교수만 answer, answeredAt 두 항목을 바꿀 수 있음
+      allow update: if isProfessor()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answer','answeredAt'])
+        && request.resource.data.answer.size() <= 3000;
+      allow delete: if isProfessor()
+        || (request.auth != null && resource.data.authorId == request.auth.uid);
     }
 
     // 그 외 전부 차단

@@ -143,3 +143,10 @@ JSON 안의 `body`, `bio`, `description` 같은 글에서 사용합니다.
 Vite + React 18 + TypeScript, React Router, Tailwind CSS 3, react-markdown(+remark-math, rehype-katex, rehype-highlight).
 로그인은 `AuthService` 인터페이스, 자료는 `DataService` 인터페이스로 분리되어 있어 `src/services/index.ts`에서 구현체만 교체하면 됩니다.
 Firebase SDK는 설치되어 있지 않습니다.
+
+## 질문 게시판
+
+- 주소: `/questions` (메뉴 "질문 게시판"). 구글 로그인한 사람만 읽고 쓸 수 있고, 답변은 교수 계정만 달 수 있습니다.
+- 질문은 **Firestore**에 저장됩니다. 사용하려면 `FIREBASE_SETUP.md`의 보안 규칙을 먼저 게시하세요. (규칙이 없으면 "권한이 없습니다" 안내가 나옵니다)
+- Firebase 설정(`.env`)이 없으면 화면 확인용 임시 저장소로 동작하며, 새로고침하면 사라집니다.
+- 무료 한도 절약: 10개씩 불러오고 "더 보기"로 추가 조회하며, 실시간 구독은 쓰지 않습니다.

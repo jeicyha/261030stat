@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import {
   GoogleAuthProvider,
   getAuth,
@@ -8,6 +7,7 @@ import {
   type User as FbUser,
 } from "firebase/auth";
 import type { AuthService } from "./authService";
+import { getFirebaseApp } from "./firebaseApp";
 import type { User } from "./types";
 
 /** .env에 Firebase 설정이 들어 있는지 */
@@ -31,15 +31,7 @@ function toUser(u: FbUser | null): User | null {
 }
 
 export function createFirebaseAuthService(): AuthService {
-  const app = initializeApp({
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  });
-  const auth = getAuth(app);
+  const auth = getAuth(getFirebaseApp());
   let current: User | null = null;
 
   return {

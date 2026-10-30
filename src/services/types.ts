@@ -159,3 +159,24 @@ export interface PublicationQuery extends PageOptions {
   type?: PublicationType | "all";
   keyword?: string;
 }
+
+// ── 질문 게시판 ─────────────────────────────────────
+export interface Question {
+  id: string;
+  authorId: string;
+  authorName: string;
+  course?: string;
+  title: string;
+  body: string; // 마크다운
+  createdAt: number; // 밀리초
+  answer?: string; // 교수 답변 (마크다운)
+  answeredAt?: number;
+}
+
+export interface NewQuestion {
+  course?: string;
+  title: string;
+  body: string;
+}
+
+export const QUESTION_LIMITS = { title: 100, body: 3000, answer: 3000 } as const;
