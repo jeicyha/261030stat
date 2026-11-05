@@ -4,7 +4,10 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import LoginModal from "./LoginModal";
 
-const NAV = [
+// to: 사이트 안의 화면 / href: 사이트 밖의 별도 파일(지식 창고 관리자 페이지)
+type NavItem = { to?: string; href?: string; label: string; end?: boolean };
+
+const NAV: NavItem[] = [
   { to: "/", label: "홈", end: true },
   { to: "/research", label: "연구" },
   { to: "/publications", label: "논문·자료" },
@@ -21,6 +24,13 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
       ? "bg-navy-100 text-navy-900 dark:bg-navy-700 dark:text-white"
       : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
   }`;
+
+function MenuLink({ n }: { n: NavItem }) {
+  if (n.href) {
+    return <a href={n.href} className={linkClass({ isActive: false })}>{n.label}</a>;
+  }
+  return <NavLink to={n.to ?? "/"} end={n.end} className={linkClass}>{n.label}</NavLink>;
+}
 
 export default function Header() {
   const { isProfessor, user, service } = useAuth();
@@ -50,7 +60,9 @@ export default function Header() {
     }
   };
 
-  const items = isProfessor ? [...NAV, { to: "/admin", label: "관리" }] : NAV;
+  const items: NavItem[] = isProfessor
+    ? [...NAV, { to: "/admin", label: "관리" }, { href: "/knowledge-admin.html", label: "지식 창고" }]
+    : NAV;
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80">
@@ -62,8 +74,8 @@ export default function Header() {
         <nav aria-label="주 메뉴" className="hidden xl:block">
           <ul className="flex items-center gap-1">
             {items.map((n) => (
-              <li key={n.to}>
-                <NavLink to={n.to} end={n.end} className={linkClass}>{n.label}</NavLink>
+              <li key={n.to ?? n.href}>
+                <MenuLink n={n} />
               </li>
             ))}
           </ul>
@@ -112,8 +124,8 @@ export default function Header() {
         <nav id="mobile-nav" aria-label="모바일 메뉴" className="border-t border-slate-200 px-4 py-2 dark:border-slate-700 xl:hidden">
           <ul>
             {items.map((n) => (
-              <li key={n.to} onClick={() => setOpen(false)}>
-                <NavLink to={n.to} end={n.end} className={linkClass}>{n.label}</NavLink>
+              <li key={n.to ?? n.href} onClick={() => setOpen(false)}>
+                <MenuLink n={n} />
               </li>
             ))}
           </ul>
